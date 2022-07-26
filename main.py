@@ -350,7 +350,7 @@ def run(rank, args):
     world_size = len(args.gpuid)
     if is_master:
         id = len(os.listdir(args.output_dir))
-        recorder = Recorder(id, args.log)
+        recorder = Recorder(id, args.output_dir, args.log)
     # build dataloader
     if args.is_pegasus:
         tok = PegasusTokenizer.from_pretrained(args.model_type)

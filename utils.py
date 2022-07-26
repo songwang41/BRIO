@@ -7,11 +7,11 @@ from datetime import datetime
 
 
 class Recorder():
-    def __init__(self, id, log=True):
+    def __init__(self, id, output_folder="./cache", log=True):
         self.log = log
         now = datetime.now()
         date = now.strftime("%y-%m-%d")
-        self.dir = f"./cache/{date}-{id}"
+        self.dir = f"{output_folder}/{date}-{id}"
         if self.log:
             os.mkdir(self.dir)
             self.f = open(os.path.join(self.dir, "log.txt"), "w")
