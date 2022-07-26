@@ -83,7 +83,7 @@ def evaluation(args):
     if args.cuda:
         model = model.cuda()
 
-    model.load_state_dict(torch.load(os.path.join("./cache", args.model_pt), map_location=f'cuda:{args.gpuid[0]}'))
+    model.load_state_dict(torch.load(os.path.join(args.output_dir, args.model_pt), map_location=f'cuda:{args.gpuid[0]}'))
     device = f'cuda:{args.gpuid[0]}'
     model.eval()
 
@@ -349,7 +349,7 @@ def run(rank, args):
     is_mp = len(args.gpuid) > 1
     world_size = len(args.gpuid)
     if is_master:
-        id = len(os.listdir("./cache"))
+        id = len(os.listdir(args.output_dir))
         recorder = Recorder(id, args.log)
     # build dataloader
     if args.is_pegasus:
@@ -376,7 +376,7 @@ def run(rank, args):
     model_path = args.pretrained if args.pretrained is not None else args.model_type
     model = BRIO(model_path, tok.pad_token_id, is_pegasus=args.is_pegasus)
     if len(args.model_pt) > 0:
-        model.load_state_dict(torch.load(os.path.join("./cache", args.model_pt), map_location=f'cuda:{gpuid}'))
+        model.load_state_dict(torch.load(os.path.join(args.output_dir, args.model_pt), map_location=f'cuda:{gpuid}'))
     if args.cuda:
         if is_mp:
             # Using DDP
@@ -530,8 +530,10 @@ if __name__ ==  "__main__":
     parser.add_argument("-g", "--do_generation", action="store_true", help="do generation evaluation")
     parser.add_argument("-l", "--log", action="store_true", help="logging")
     parser.add_argument("-p", "--port", type=int, default=12355, help="port")
+    parser.add_argument("-o", "--output_dir", type=str, default="./cache", help="output folder")
     parser.add_argument("--model_pt", default="", type=str, help="model path")
     parser.add_argument("--config", default="", type=str, help="config path")
+
     args = parser.parse_args()
     if args.cuda is False:
         if args.evaluate:
